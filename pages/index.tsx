@@ -1,6 +1,29 @@
+import { Container, Stack } from "@chakra-ui/layout";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Navbar from "../components/Navbar";
+import CoinRateCard from "../components/CoinRateCard";
+
+const tokenData = [
+  {
+    ticker: "wBTC",
+    imgUrl: "/wBTC.svg",
+    saveRate: 3.86,
+    borrRate: 5.39,
+  },
+  {
+    ticker: "ETH",
+    imgUrl: "/ETH.svg",
+    saveRate: 1.95,
+    borrRate: 3.75,
+  },
+  {
+    ticker: "BAT",
+    imgUrl: "/BAT.svg",
+    saveRate: 18.16,
+    borrRate: 21.59,
+  },
+];
 
 const Home: NextPage = () => {
   return (
@@ -13,7 +36,19 @@ const Home: NextPage = () => {
 
       <Navbar />
 
-      <main></main>
+      <Container as="main" maxW="container.lg" p={5}>
+        <Stack spacing={2}>
+          {tokenData.map((tknInfo) => (
+            <CoinRateCard
+              key={tknInfo.ticker}
+              ticker={tknInfo.ticker}
+              imgUrl={tknInfo.imgUrl}
+              saveRate={tknInfo.saveRate}
+              borrRate={tknInfo.borrRate}
+            />
+          ))}
+        </Stack>
+      </Container>
 
       <footer></footer>
     </div>
