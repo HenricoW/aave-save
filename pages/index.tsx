@@ -3,6 +3,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Navbar from "../components/Navbar";
 import CoinRateCard from "../components/CoinRateCard";
+import AccSummary from "../components/AccSummary";
 
 const tokenData = [
   {
@@ -36,8 +37,9 @@ const Home: NextPage = () => {
 
       <Navbar />
 
-      <Container as="main" maxW="container.lg" p={5}>
-        <Stack spacing={2}>
+      <Container as="main" maxW="container.lg" p={5} d="flex" flexDir="column" alignItems="center">
+        <AccSummary />
+        <Stack as="section" spacing={2} minW="100%">
           {tokenData.map((tknInfo) => (
             <CoinRateCard
               key={tknInfo.ticker}
