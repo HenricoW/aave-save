@@ -18,7 +18,7 @@ function Navbar() {
           {isConnected ? (
             <HStack spacing="3">
               <Image height="40px" width="40px" className={styles.accountImg} src="https://placekitten.com/100/100" />
-              <Text>0x31BE7...498Aa</Text>
+              <Text>0x8ae5...a243A</Text>
             </HStack>
           ) : (
             <Button variant="outline" colorScheme="twitter">
