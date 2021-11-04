@@ -4,6 +4,7 @@ import Head from "next/head";
 import Navbar from "../components/Navbar";
 import CoinRateCard from "../components/CoinRateCard";
 import AccSummary from "../components/AccSummary";
+import InteractionPanel from "../components/InteractionPanel";
 
 const tokenData = [
   {
@@ -39,6 +40,7 @@ const Home: NextPage = () => {
 
       <Container as="main" maxW="container.lg" p={5} d="flex" flexDir="column" alignItems="center">
         <AccSummary />
+        <InteractionPanel />
         <Stack as="section" spacing={2} minW="100%">
           {tokenData.map((tknInfo) => (
             <CoinRateCard
