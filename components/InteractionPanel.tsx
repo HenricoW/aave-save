@@ -5,12 +5,17 @@ import { Button } from "@chakra-ui/button";
 import { Progress } from "@chakra-ui/progress";
 import { Box, Container, HStack, Text, VStack } from "@chakra-ui/layout";
 import Image from "next/image";
+import { Dispatch, SetStateAction } from "react";
 
 const tokenDetail = {
   ticker: "wBTC",
   imgUrl: "/wBTC.svg",
   saveRate: 3.86,
   borrRate: 5.39,
+};
+
+export type InteractionPanelProps = {
+  setIsInteractOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 const interactionInput = (
@@ -38,7 +43,7 @@ const interactionInput = (
   </HStack>
 );
 
-function InteractionPanel() {
+function InteractionPanel({ setIsInteractOpen }: InteractionPanelProps) {
   return (
     <Container maxW="container.md" border="1px" borderColor="gray.600" borderRadius="md" p="4" mb="5">
       <Box as="a" d="flex" justifyContent="space-between" py={2} px={4}>
@@ -93,7 +98,15 @@ function InteractionPanel() {
           </Text>
         </Box>
         <Progress colorScheme="green" size="lg" value={68} />
-        <Button variant="outline" colorScheme="red" d="block" mt="8" mx="auto" w="40">
+        <Button
+          variant="outline"
+          colorScheme="red"
+          d="block"
+          mt="8"
+          mx="auto"
+          w="40"
+          onClick={() => setIsInteractOpen(false)}
+        >
           CLOSE
         </Button>
       </Container>

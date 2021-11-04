@@ -1,14 +1,16 @@
 import { Box, HStack, Text, VStack } from "@chakra-ui/layout";
 import Image from "next/image";
+import { Dispatch, SetStateAction } from "react";
 
 export type CoinRateCardProps = {
   ticker: string;
   imgUrl: string;
   saveRate: number;
   borrRate: number;
+  setIsInteractOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-function CoinRateCard({ ticker, imgUrl, saveRate, borrRate }: CoinRateCardProps) {
+function CoinRateCard({ ticker, imgUrl, saveRate, borrRate, setIsInteractOpen }: CoinRateCardProps) {
   return (
     <Box
       as="a"
@@ -23,6 +25,7 @@ function CoinRateCard({ ticker, imgUrl, saveRate, borrRate }: CoinRateCardProps)
         background: "gray.600",
         cursor: "pointer",
       }}
+      onClick={() => setIsInteractOpen(true)}
     >
       <HStack spacing="3">
         <Image height="40px" width="40px" src={imgUrl} />
@@ -30,7 +33,7 @@ function CoinRateCard({ ticker, imgUrl, saveRate, borrRate }: CoinRateCardProps)
           {ticker}
         </Text>
       </HStack>
-      <Box d="flex" justifyContent="space-between" flexBasis="40%">
+      <Box d="flex" justifyContent="space-between" flexBasis="45%">
         <VStack spacing="1">
           <Text fontSize="xs" color="gray.400">
             Savings APY

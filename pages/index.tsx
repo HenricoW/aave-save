@@ -1,33 +1,16 @@
 import { Container, Stack } from "@chakra-ui/layout";
 import type { NextPage } from "next";
+import { useState } from "react";
 import Head from "next/head";
 import Navbar from "../components/Navbar";
 import CoinRateCard from "../components/CoinRateCard";
 import AccSummary from "../components/AccSummary";
 import InteractionPanel from "../components/InteractionPanel";
-
-const tokenData = [
-  {
-    ticker: "wBTC",
-    imgUrl: "/wBTC.svg",
-    saveRate: 3.86,
-    borrRate: 5.39,
-  },
-  {
-    ticker: "ETH",
-    imgUrl: "/ETH.svg",
-    saveRate: 1.95,
-    borrRate: 3.75,
-  },
-  {
-    ticker: "BAT",
-    imgUrl: "/BAT.svg",
-    saveRate: 18.16,
-    borrRate: 21.59,
-  },
-];
+import { tokenData } from "../utils/dummyData";
 
 const Home: NextPage = () => {
+  const [isUserConnected, setIsUserConnected] = useState(true); // move to context
+  const [isInteractOpen, setIsInteractOpen] = useState(false);
   return (
     <div>
       <Head>
@@ -40,7 +23,7 @@ const Home: NextPage = () => {
 
       <Container as="main" maxW="container.lg" p={5} d="flex" flexDir="column" alignItems="center">
         <AccSummary />
-        <InteractionPanel />
+        {isInteractOpen ? <InteractionPanel setIsInteractOpen={setIsInteractOpen} /> : null}
         <Stack as="section" spacing={2} minW="100%">
           {tokenData.map((tknInfo) => (
             <CoinRateCard
@@ -49,6 +32,7 @@ const Home: NextPage = () => {
               imgUrl={tknInfo.imgUrl}
               saveRate={tknInfo.saveRate}
               borrRate={tknInfo.borrRate}
+              setIsInteractOpen={setIsInteractOpen}
             />
           ))}
         </Stack>
