@@ -3,10 +3,14 @@ import { CircularProgress, CircularProgressLabel } from "@chakra-ui/progress";
 import Image from "next/image";
 import style from "../styles/AccSummary.module.css";
 import React from "react";
-import { userData } from "../utils/dummyData";
+import { tokenData, userData } from "../utils/dummyData";
+import { getTotTokensValue } from "../utils/utilFunctions";
 
 function AccSummary() {
-  const userCollateral = (userData.borrowed / userData.deposits) * 100;
+  const totalDeposits = getTotTokensValue(tokenData, userData.deposits);
+  const totalLoaned = getTotTokensValue(tokenData, userData.borrowed);
+  const userCollateral = (totalLoaned / totalDeposits) * 100;
+
   return (
     <Container
       className="accountSummary"
@@ -32,7 +36,7 @@ function AccSummary() {
                 Total Deposits:
               </Text>
               <Text fontSize="sm" fontWeight="bold">
-                $ {userData.deposits}
+                $ {totalDeposits.toFixed(2)}
               </Text>
             </Box>
             <Box d="flex" alignItems="center" justifyContent="space-between" flexGrow={1}>
@@ -40,7 +44,7 @@ function AccSummary() {
                 Total Borrowed:
               </Text>
               <Text fontSize="sm" fontWeight="bold">
-                $ {userData.borrowed}
+                $ {totalLoaned.toFixed(2)}
               </Text>
             </Box>
           </Box>
