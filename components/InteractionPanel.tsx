@@ -3,8 +3,15 @@ import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { NumberInput, NumberInputField } from "@chakra-ui/number-input";
 import { Button } from "@chakra-ui/button";
 import { Progress } from "@chakra-ui/progress";
-import React from "react";
-import { Box, Container, HStack, Text } from "@chakra-ui/layout";
+import { Box, Container, HStack, Text, VStack } from "@chakra-ui/layout";
+import Image from "next/image";
+
+const tokenDetail = {
+  ticker: "wBTC",
+  imgUrl: "/wBTC.svg",
+  saveRate: 3.86,
+  borrRate: 5.39,
+};
 
 const interactionInput = (
   title: string,
@@ -34,6 +41,32 @@ const interactionInput = (
 function InteractionPanel() {
   return (
     <Container maxW="container.md" border="1px" borderColor="gray.600" borderRadius="md" p="4" mb="5">
+      <Box as="a" d="flex" justifyContent="space-between" py={2} px={4}>
+        <HStack spacing="3">
+          <Image height="60px" width="60px" src={tokenDetail.imgUrl} />
+          <Text fontWeight="bold" fontSize="lg">
+            {tokenDetail.ticker}
+          </Text>
+        </HStack>
+        <Box d="flex" justifyContent="space-between" flexBasis="45%">
+          <VStack spacing="1">
+            <Text fontSize="xs" color="gray.400">
+              Savings APY
+            </Text>
+            <Text fontSize="lg" fontWeight="bold" color="green.300">
+              {tokenDetail.saveRate.toString()} %
+            </Text>
+          </VStack>
+          <VStack spacing="1">
+            <Text fontSize="xs" color="gray.400">
+              Borrow APY
+            </Text>
+            <Text fontSize="lg" fontWeight="bold" color="orange.300">
+              {tokenDetail.borrRate.toString()} %
+            </Text>
+          </VStack>
+        </Box>
+      </Box>
       <Tabs align="center" colorScheme="twitter">
         <TabList>
           <Tab>Save</Tab>
@@ -50,7 +83,7 @@ function InteractionPanel() {
           </TabPanel>
         </TabPanels>
       </Tabs>
-      <Container maxW="container.md" pt="2">
+      <Container d="flex" flexDir="column" maxW="container.md" pt="2">
         <Box d="flex" alignItems="center" justifyContent="space-between">
           <Text py="3" color="gray.500">
             Updated Collateral:
@@ -60,6 +93,9 @@ function InteractionPanel() {
           </Text>
         </Box>
         <Progress colorScheme="green" size="lg" value={68} />
+        <Button variant="outline" colorScheme="red" d="block" mt="8" mx="auto" w="40">
+          CLOSE
+        </Button>
       </Container>
     </Container>
   );
