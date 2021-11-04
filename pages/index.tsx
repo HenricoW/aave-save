@@ -6,10 +6,9 @@ import Navbar from "../components/Navbar";
 import CoinRateCard from "../components/CoinRateCard";
 import AccSummary from "../components/AccSummary";
 import InteractionPanel from "../components/InteractionPanel";
-import { tokenData } from "../utils/dummyData";
+import { appState, tokenData } from "../utils/dummyData";
 
 const Home: NextPage = () => {
-  const [isUserConnected, setIsUserConnected] = useState(true); // move to context
   const [isInteractOpen, setIsInteractOpen] = useState(false);
   return (
     <div>
@@ -23,7 +22,7 @@ const Home: NextPage = () => {
 
       <Container as="main" maxW="container.lg" p={5} d="flex" flexDir="column" alignItems="center">
         <AccSummary />
-        {isInteractOpen ? <InteractionPanel setIsInteractOpen={setIsInteractOpen} /> : null}
+        {appState.isUserConnected && isInteractOpen ? <InteractionPanel setIsInteractOpen={setIsInteractOpen} /> : null}
         <Stack as="section" spacing={2} minW="100%">
           {tokenData.map((tknInfo) => (
             <CoinRateCard
