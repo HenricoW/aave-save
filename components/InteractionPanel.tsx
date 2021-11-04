@@ -1,41 +1,36 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/tabs";
-import { FormControl, FormLabel } from "@chakra-ui/form-control";
-import { NumberInput, NumberInputField } from "@chakra-ui/number-input";
 import { Button } from "@chakra-ui/button";
 import { Progress } from "@chakra-ui/progress";
 import { Box, Container, HStack, Text, VStack } from "@chakra-ui/layout";
 import Image from "next/image";
 import { Dispatch, SetStateAction } from "react";
 import { tokenData, userData } from "../utils/dummyData";
+import InteractionInput from "./InteractionInput";
 
 export type InteractionPanelProps = {
   setIsInteractOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-const interactionInput = (
+const createInput = (
   title: string,
   helperText: string,
   helperAmount: string,
   topMargin: boolean,
   btnColor: string,
+  warnValue: number,
+  precision: number,
   btnText = "submit"
 ) => (
-  <HStack alignItems="end">
-    <FormControl id="withdraw" mt={topMargin ? "8" : "0"}>
-      <Box d="flex" alignItems="center" justifyContent="space-between">
-        <FormLabel>{title}</FormLabel>
-        <Text fontSize="sm" color="gray.500">
-          {helperText}: {helperAmount}
-        </Text>
-      </Box>
-      <NumberInput min={10}>
-        <NumberInputField />
-      </NumberInput>
-    </FormControl>
-    <Button colorScheme={btnColor} variant="outline">
-      {btnText.toUpperCase()}
-    </Button>
-  </HStack>
+  <InteractionInput
+    title={title}
+    helperText={helperText}
+    helperAmount={helperAmount}
+    topMargin={topMargin}
+    btnColor={btnColor}
+    warnValue={warnValue}
+    precision={precision}
+    btnText={btnText}
+  />
 );
 
 function InteractionPanel({ setIsInteractOpen }: InteractionPanelProps) {
@@ -45,7 +40,7 @@ function InteractionPanel({ setIsInteractOpen }: InteractionPanelProps) {
 
   return (
     <Container maxW="container.md" border="1px" borderColor="gray.600" borderRadius="md" p="4" mb="5">
-      <Box as="a" d="flex" justifyContent="space-between" py={2} px={4}>
+      <Box d="flex" justifyContent="space-between" py={2} px={4}>
         <HStack spacing="3">
           <Image height="60px" width="60px" src={tokenData[0].imgUrl} />
           <Text fontWeight="bold" fontSize="lg">
@@ -71,6 +66,14 @@ function InteractionPanel({ setIsInteractOpen }: InteractionPanelProps) {
           </VStack>
         </Box>
       </Box>
+      <Box d="flex" justifyContent="space-between" pb="2" px="5">
+        <Text fontSize="lg" textAlign="center">
+          COLLATERAL LIMIT:
+        </Text>
+        <Text fontSize="lg" textAlign="center" fontWeight="bold">
+          80 %
+        </Text>
+      </Box>
       <Tabs align="center" colorScheme="twitter">
         <TabList>
           <Tab>Save</Tab>
@@ -78,12 +81,12 @@ function InteractionPanel({ setIsInteractOpen }: InteractionPanelProps) {
         </TabList>
         <TabPanels>
           <TabPanel className="savePanel">
-            {interactionInput("Deposit", "Your Wallet", walletAmount, false, "green")}
-            {interactionInput("Withdraw", "Available", depositAmount, true, "green")}
+            {createInput("Deposit", "Your Wallet", walletAmount, false, "green", parseFloat(walletAmount), decimals)}
+            {createInput("Withdraw", "Available", depositAmount, true, "green", parseFloat(depositAmount), decimals)}
           </TabPanel>
           <TabPanel className="borrowPanel">
-            {interactionInput("Borrow", "Available", depositAmount, false, "orange")}
-            {interactionInput("Repay", "Your Wallet", walletAmount, true, "orange")}
+            {createInput("Borrow", "Available", depositAmount, false, "orange", parseFloat(depositAmount), decimals)}
+            {createInput("Repay", "Your Wallet", walletAmount, true, "orange", parseFloat(walletAmount), decimals)}
           </TabPanel>
         </TabPanels>
       </Tabs>
