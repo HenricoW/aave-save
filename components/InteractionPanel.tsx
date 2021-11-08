@@ -2,22 +2,24 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/tabs";
 import { Button } from "@chakra-ui/button";
 import { Box, Container, HStack, Text, VStack } from "@chakra-ui/layout";
 import Image from "next/image";
-import { createContext, Dispatch, SetStateAction, useReducer } from "react";
-import { appState, getTokenData, getUserAmounts } from "../utils/dummyData";
+import { createContext, Dispatch, SetStateAction, useContext, useReducer } from "react";
+import { getTokenData, getUserAmounts } from "../utils/dummyData";
 import InteractionInput from "./InteractionInput";
 import { collateralReducer } from "../styles/reducers/Reducers";
 import CollateralBar from "./CollateralBar";
+import { AppContext } from "./Layout";
 
 export type InteractionPanelProps = {
   setIsInteractOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-const tknData = getTokenData(appState.selectedToken);
 export const userAmounts = getUserAmounts();
 export const userTokenAmountsContext = createContext(userAmounts);
 
 function InteractionPanel({ setIsInteractOpen }: InteractionPanelProps) {
+  const { selectedToken } = useContext(AppContext);
   const [usrFieldState, fieldsDispatch] = useReducer(collateralReducer, userAmounts);
+  const tknData = getTokenData(selectedToken);
 
   return (
     <userTokenAmountsContext.Provider value={usrFieldState}>

@@ -3,8 +3,9 @@ import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Box, HStack, Text } from "@chakra-ui/layout";
 import { Button } from "@chakra-ui/button";
 import { userTokenAmountsContext } from "./InteractionPanel";
-import { appState, getInputConfig, getTokenData, inputDispatchConfig } from "../utils/dummyData";
+import { getInputConfig, getTokenData, inputDispatchConfig } from "../utils/dummyData";
 import NumInput from "./NumInput";
+import { AppContext } from "./Layout";
 
 type InteractionInputProps = {
   panelType: string;
@@ -25,10 +26,10 @@ function InteractionInput({ panelType, fieldsDispatch }: InteractionInputProps) 
   const [topOutOfRange, setTopOutOfRange] = useState(false);
   const [bottomOutOfRange, setBottomOutOfRange] = useState(false);
 
-  const userAmounts = useContext(userTokenAmountsContext);
-
-  const { walletAmount, depositAmount, borrowedAmount, decimals, totalDeposits, totalLoaned } = userAmounts;
-  const { price } = getTokenData(appState.selectedToken);
+  const { walletAmount, depositAmount, borrowedAmount, decimals, totalDeposits, totalLoaned } =
+    useContext(userTokenAmountsContext);
+  const { selectedToken } = useContext(AppContext);
+  const { price } = getTokenData(selectedToken);
 
   useEffect(() => {
     setFieldAmt({ top: "0", bottom: "0" });
