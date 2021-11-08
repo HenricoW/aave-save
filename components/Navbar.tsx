@@ -5,12 +5,11 @@ import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu";
 import Image from "next/image";
 import { useContext } from "react";
 import styles from "../styles/Navbar.module.css";
-import { userData } from "../utils/dummyData";
 import { shortAddress } from "../utils/utilFunctions";
 import { AppContext } from "./Layout";
 
 function Navbar() {
-  const { isUserConnected } = useContext(AppContext);
+  const { isUserConnected, userData } = useContext(AppContext);
 
   return (
     <Box as="header" py={5} px={6} bg="gray.700">

@@ -1,17 +1,19 @@
 import { Stack } from "@chakra-ui/layout";
 import type { NextPage } from "next";
-import { useContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import Head from "next/head";
 import CoinRateCard from "../components/CoinRateCard";
 import AccSummary from "../components/AccSummary";
 import InteractionPanel from "../components/InteractionPanel";
-import { tokenData } from "../utils/dummyData";
+import { allTokenData } from "../utils/dummyData";
 import Layout, { AppContext } from "../components/Layout";
+
+export const TokenContext = createContext(allTokenData);
 
 const Home: NextPage = () => {
   const [isInteractOpen, setIsInteractOpen] = useState(false);
-
   const { isUserConnected } = useContext(AppContext);
+
   return (
     <>
       <Head>
@@ -21,10 +23,12 @@ const Home: NextPage = () => {
       </Head>
 
       <Layout>
-        {isUserConnected ? <AccSummary /> : null}
-        {isUserConnected && isInteractOpen ? <InteractionPanel setIsInteractOpen={setIsInteractOpen} /> : null}
+        <TokenContext.Provider value={allTokenData}>
+          {isUserConnected ? <AccSummary /> : null}
+          {isUserConnected && isInteractOpen ? <InteractionPanel setIsInteractOpen={setIsInteractOpen} /> : null}
+        </TokenContext.Provider>
         <Stack as="section" spacing={2} minW="100%">
-          {tokenData.map((tknInfo) => (
+          {allTokenData.map((tknInfo) => (
             <CoinRateCard
               key={tknInfo.ticker}
               ticker={tknInfo.ticker}

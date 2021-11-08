@@ -2,18 +2,21 @@ import { Box, Container, Text } from "@chakra-ui/layout";
 import { CircularProgress, CircularProgressLabel } from "@chakra-ui/progress";
 import Image from "next/image";
 import style from "../styles/AccSummary.module.css";
-import React from "react";
-import { tokenData, userData } from "../utils/dummyData";
+import React, { useContext } from "react";
 import { getTotTokensValue } from "../utils/utilFunctions";
+import { AppContext } from "./Layout";
+import { TokenContext } from "../pages";
 
 function AccSummary() {
-  const totalDeposits = getTotTokensValue(tokenData, userData.deposits);
-  const totalLoaned = getTotTokensValue(tokenData, userData.borrowed);
+  const { userData } = useContext(AppContext);
+  const allTokenData = useContext(TokenContext);
+
+  const totalDeposits = getTotTokensValue(allTokenData, userData.deposits);
+  const totalLoaned = getTotTokensValue(allTokenData, userData.borrowed);
   const userCollateral = (totalLoaned / totalDeposits) * 100;
 
   return (
     <Container
-      className="accountSummary"
       as="section"
       maxW="container.md"
       bg="gray.800"
