@@ -50,7 +50,7 @@ function AccSummary() {
           </Box>
         </Box>
         <Box className="collGraph" d="flex" flexDir="column" alignItems="center" ml="4">
-          <CircularProgress size="95px" thickness="15px" value={userCollateral} color="green.500" mb="2">
+          <CircularProgress size="95px" thickness="15px" value={userCollateral} color="green.400" mb="2">
             <CircularProgressLabel>{userCollateral.toFixed(0)}%</CircularProgressLabel>
           </CircularProgress>
           <Text fontSize="sm" color="gray.500">

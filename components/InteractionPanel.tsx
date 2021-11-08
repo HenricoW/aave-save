@@ -13,11 +13,11 @@ export type InteractionPanelProps = {
 };
 
 const tknData = getTokenData(appState.selectedToken);
-export const fieldVals = getUserAmounts();
-export const userTokenAmountsContext = createContext(fieldVals);
+export const userAmounts = getUserAmounts();
+export const userTokenAmountsContext = createContext(userAmounts);
 
 function InteractionPanel({ setIsInteractOpen }: InteractionPanelProps) {
-  const [usrFieldState, fieldsDispatch] = useReducer(collateralReducer, fieldVals);
+  const [usrFieldState, fieldsDispatch] = useReducer(collateralReducer, userAmounts);
 
   return (
     <userTokenAmountsContext.Provider value={usrFieldState}>
