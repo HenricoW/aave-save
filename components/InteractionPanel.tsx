@@ -4,7 +4,7 @@ import { Box, Container, HStack, Text, VStack } from "@chakra-ui/layout";
 import Image from "next/image";
 import { createContext, Dispatch, SetStateAction, useContext, useReducer } from "react";
 import { getTokenData, getUserAmounts } from "../utils/dummyData";
-import InteractionInput from "./InteractionInput";
+import PanelInputGroup from "./PanelInputGroup";
 import { collateralReducer } from "../styles/reducers/Reducers";
 import CollateralBar from "./CollateralBar";
 import { AppContext } from "./Layout";
@@ -17,9 +17,9 @@ export const userAmounts = getUserAmounts();
 export const userTokenAmountsContext = createContext(userAmounts);
 
 function InteractionPanel({ setIsInteractOpen }: InteractionPanelProps) {
-  const { selectedToken } = useContext(AppContext);
+  const { selectedTicker } = useContext(AppContext);
   const [usrFieldState, fieldsDispatch] = useReducer(collateralReducer, userAmounts);
-  const tknData = getTokenData(selectedToken);
+  const tknData = getTokenData(selectedTicker);
 
   return (
     <userTokenAmountsContext.Provider value={usrFieldState}>
@@ -65,10 +65,10 @@ function InteractionPanel({ setIsInteractOpen }: InteractionPanelProps) {
           </TabList>
           <TabPanels>
             <TabPanel>
-              <InteractionInput panelType={"savePanel"} fieldsDispatch={fieldsDispatch} />
+              <PanelInputGroup panelType={"savePanel"} fieldsDispatch={fieldsDispatch} />
             </TabPanel>
             <TabPanel>
-              <InteractionInput panelType={"borrowPanel"} fieldsDispatch={fieldsDispatch} />
+              <PanelInputGroup panelType={"borrowPanel"} fieldsDispatch={fieldsDispatch} />
             </TabPanel>
           </TabPanels>
         </Tabs>

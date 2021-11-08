@@ -7,7 +7,7 @@ import { getInputConfig, getTokenData, inputDispatchConfig } from "../utils/dumm
 import NumInput from "./NumInput";
 import { AppContext } from "./Layout";
 
-type InteractionInputProps = {
+type PanelInputGroupProps = {
   panelType: string;
   fieldsDispatch: Dispatch<{
     type: string;
@@ -21,15 +21,15 @@ type fieldAmtType = {
 
 const btnText = "submit";
 
-function InteractionInput({ panelType, fieldsDispatch }: InteractionInputProps) {
+function PanelInputGroup({ panelType, fieldsDispatch }: PanelInputGroupProps) {
   const [fieldAmt, setFieldAmt] = useState<fieldAmtType>({ top: "0", bottom: "0" });
   const [topOutOfRange, setTopOutOfRange] = useState(false);
   const [bottomOutOfRange, setBottomOutOfRange] = useState(false);
 
   const { walletAmount, depositAmount, borrowedAmount, decimals, totalDeposits, totalLoaned } =
     useContext(userTokenAmountsContext);
-  const { selectedToken } = useContext(AppContext);
-  const { price } = getTokenData(selectedToken);
+  const { selectedTicker } = useContext(AppContext);
+  const { price } = getTokenData(selectedTicker);
 
   useEffect(() => {
     setFieldAmt({ top: "0", bottom: "0" });
@@ -109,4 +109,4 @@ function InteractionInput({ panelType, fieldsDispatch }: InteractionInputProps) 
   );
 }
 
-export default InteractionInput;
+export default PanelInputGroup;
