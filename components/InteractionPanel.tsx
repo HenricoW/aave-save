@@ -3,7 +3,7 @@ import { Button } from "@chakra-ui/button";
 import { Box, Container, HStack, Text, VStack } from "@chakra-ui/layout";
 import Image from "next/image";
 import { createContext, Dispatch, SetStateAction, useContext, useReducer } from "react";
-import { getTokenData, getUserAmounts } from "../utils/dummyData";
+import { defaultUserAmounts } from "../utils/dummyData";
 import PanelInputGroup from "./PanelInputGroup";
 import { collateralReducer } from "../store/reducers/Reducers";
 import CollateralBar from "./CollateralBar";
@@ -13,15 +13,15 @@ export type InteractionPanelProps = {
   setIsInteractOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-export const userAmounts = getUserAmounts();
-export const userTokenAmountsContext = createContext(userAmounts);
+export const collateralContext = createContext(defaultUserAmounts);
 
 function InteractionPanel({ setIsInteractOpen }: InteractionPanelProps) {
-  const { selectedToken } = useContext(AppContext);
+  const { selectedToken, userAmounts } = useContext(AppContext);
+
   const [usrFieldState, fieldsDispatch] = useReducer(collateralReducer, userAmounts);
 
   return (
-    <userTokenAmountsContext.Provider value={usrFieldState}>
+    <collateralContext.Provider value={usrFieldState}>
       <Container maxW="container.md" border="1px" borderColor="gray.600" borderRadius="md" p="4" mb="5">
         <Box d="flex" justifyContent="space-between" py={2} px={4}>
           <HStack spacing="3">
@@ -86,7 +86,7 @@ function InteractionPanel({ setIsInteractOpen }: InteractionPanelProps) {
           </Button>
         </Container>
       </Container>
-    </userTokenAmountsContext.Provider>
+    </collateralContext.Provider>
   );
 }
 

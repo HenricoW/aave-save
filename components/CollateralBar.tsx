@@ -1,10 +1,10 @@
 import { Box, Text } from "@chakra-ui/layout";
 import { Progress } from "@chakra-ui/progress";
 import { useContext } from "react";
-import { userTokenAmountsContext } from "./InteractionPanel";
+import { collateralContext } from "./InteractionPanel";
 
 function CollateralBar() {
-  const { totalDeposits, totalLoaned } = useContext(userTokenAmountsContext);
+  const { totalDeposits, totalLoaned } = useContext(collateralContext);
   const collateral = (totalLoaned / totalDeposits) * 100;
 
   return (
