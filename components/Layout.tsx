@@ -1,13 +1,14 @@
 import { Container } from "@chakra-ui/layout";
 import React, { createContext, useReducer } from "react";
 import { appReducer } from "../store/reducers/Reducers";
-import { allTokenData, appData, userData } from "../utils/dummyData";
+import { allTokenData, appData, defaultUserAmounts, userData } from "../utils/dummyData";
 import Navbar from "./Navbar";
 
 export const initAppState = {
   ...appData,
   userData,
   selectedToken: allTokenData[0], // default value
+  userAmounts: defaultUserAmounts,
 };
 
 type LayoutProps = {

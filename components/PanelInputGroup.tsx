@@ -2,8 +2,7 @@ import { Dispatch, useContext, useEffect, useState } from "react";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Box, HStack, Text } from "@chakra-ui/layout";
 import { Button } from "@chakra-ui/button";
-import { userTokenAmountsContext } from "./InteractionPanel";
-import { getInputConfig, getTokenData, inputDispatchConfig } from "../utils/dummyData";
+import { getInputConfig, inputDispatchConfig } from "../utils/dummyData";
 import NumInput from "./NumInput";
 import { AppContext } from "./Layout";
 
@@ -12,6 +11,10 @@ type PanelInputGroupProps = {
   fieldsDispatch: Dispatch<{
     type: string;
     payload: number;
+    origTotals: {
+      totalDeposits: number;
+      totalLoaned: number;
+    };
   }>;
 };
 
@@ -26,17 +29,15 @@ function PanelInputGroup({ panelType, fieldsDispatch }: PanelInputGroupProps) {
   const [topOutOfRange, setTopOutOfRange] = useState(false);
   const [bottomOutOfRange, setBottomOutOfRange] = useState(false);
 
-  const { walletAmount, depositAmount, borrowedAmount, decimals, totalDeposits, totalLoaned } =
-    useContext(userTokenAmountsContext);
-  const { selectedTicker } = useContext(AppContext);
-  const { price } = getTokenData(selectedTicker);
+  const { selectedToken, userAmounts } = useContext(AppContext);
+  const { price, displayDecimals } = selectedToken;
+  const { totalDeposits, totalLoaned } = userAmounts;
 
   useEffect(() => {
     setFieldAmt({ top: "0", bottom: "0" });
   }, []);
 
-  const configArgs = { panelType, totalDeposits, totalLoaned, decimals, price };
-  const fieldConfig = getInputConfig({ ...configArgs, walletAmount, depositAmount, borrowedAmount });
+  const fieldConfig = getInputConfig({ panelType, userAmounts, decimals: displayDecimals, price });
 
   // input change handler
   const handleChange = (val: string, pos: "top" | "bottom") => {
@@ -49,6 +50,7 @@ function PanelInputGroup({ panelType, fieldsDispatch }: PanelInputGroupProps) {
       bottom: (arg) => setBottomOutOfRange(arg),
     };
 
+    // two way binding
     setFieldAmt({ ...fieldAmt, [pos]: val });
 
     // validation feedback
@@ -59,7 +61,11 @@ function PanelInputGroup({ panelType, fieldsDispatch }: PanelInputGroupProps) {
       selektah[pos](false);
     }
 
-    const action = { type: inputDispatchConfig[panelType][pos], payload: theVal * price };
+    const action = {
+      type: inputDispatchConfig[panelType][pos],
+      payload: theVal * price,
+      origTotals: { totalDeposits, totalLoaned },
+    };
     fieldsDispatch(action);
   };
 
@@ -69,7 +75,7 @@ function PanelInputGroup({ panelType, fieldsDispatch }: PanelInputGroupProps) {
       <Box d="flex" alignItems="center" justifyContent="space-between">
         <FormLabel>{fieldConfig[pos].title}</FormLabel>
         <Text fontSize="sm" color="gray.500">
-          {fieldConfig[pos].helperText}: {fieldConfig[pos].helperAmount}
+          {fieldConfig[pos].helperText}: {fieldConfig[pos].helperAmount + " " + selectedToken.ticker}
         </Text>
       </Box>
     );
@@ -83,7 +89,7 @@ function PanelInputGroup({ panelType, fieldsDispatch }: PanelInputGroupProps) {
           <NumInput
             value={fieldAmt.top}
             onChange={(val) => handleChange(val, "top")}
-            precision={decimals}
+            precision={displayDecimals}
             outOfRange={topOutOfRange}
           />
         </FormControl>
@@ -97,7 +103,7 @@ function PanelInputGroup({ panelType, fieldsDispatch }: PanelInputGroupProps) {
           <NumInput
             value={fieldAmt.bottom}
             onChange={(val) => handleChange(val, "bottom")}
-            precision={decimals}
+            precision={displayDecimals}
             outOfRange={bottomOutOfRange}
           />
         </FormControl>
