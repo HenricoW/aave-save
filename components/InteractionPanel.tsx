@@ -5,7 +5,7 @@ import Image from "next/image";
 import { createContext, Dispatch, SetStateAction, useContext, useReducer } from "react";
 import { getTokenData, getUserAmounts } from "../utils/dummyData";
 import PanelInputGroup from "./PanelInputGroup";
-import { collateralReducer } from "../styles/reducers/Reducers";
+import { collateralReducer } from "../store/reducers/Reducers";
 import CollateralBar from "./CollateralBar";
 import { AppContext } from "./Layout";
 
@@ -17,18 +17,17 @@ export const userAmounts = getUserAmounts();
 export const userTokenAmountsContext = createContext(userAmounts);
 
 function InteractionPanel({ setIsInteractOpen }: InteractionPanelProps) {
-  const { selectedTicker } = useContext(AppContext);
+  const { selectedToken } = useContext(AppContext);
   const [usrFieldState, fieldsDispatch] = useReducer(collateralReducer, userAmounts);
-  const tknData = getTokenData(selectedTicker);
 
   return (
     <userTokenAmountsContext.Provider value={usrFieldState}>
       <Container maxW="container.md" border="1px" borderColor="gray.600" borderRadius="md" p="4" mb="5">
         <Box d="flex" justifyContent="space-between" py={2} px={4}>
           <HStack spacing="3">
-            <Image height="60px" width="60px" src={tknData.imgUrl} />
+            <Image height="60px" width="60px" src={selectedToken.imgUrl} />
             <Text fontWeight="bold" fontSize="lg">
-              {tknData.ticker}
+              {selectedToken.ticker}
             </Text>
           </HStack>
           <Box d="flex" justifyContent="space-between" flexBasis="45%">
@@ -37,7 +36,7 @@ function InteractionPanel({ setIsInteractOpen }: InteractionPanelProps) {
                 Savings APY
               </Text>
               <Text fontSize="lg" fontWeight="bold" color="green.300">
-                {tknData.saveRate.toString()} %
+                {selectedToken.saveRate.toString()} %
               </Text>
             </VStack>
             <VStack spacing="1">
@@ -45,7 +44,7 @@ function InteractionPanel({ setIsInteractOpen }: InteractionPanelProps) {
                 Borrow APY
               </Text>
               <Text fontSize="lg" fontWeight="bold" color="orange.300">
-                {tknData.borrRate.toString()} %
+                {selectedToken.borrRate.toString()} %
               </Text>
             </VStack>
           </Box>
