@@ -6,10 +6,15 @@ import Image from "next/image";
 import { useContext } from "react";
 import styles from "../styles/Navbar.module.css";
 import { shortAddress } from "../utils/utilFunctions";
-import { AppContext } from "./Layout";
+import { AppContext, AppDispatchContext } from "./Layout";
 
 function Navbar() {
   const { isUserConnected, userData } = useContext(AppContext);
+  const appDispatch = useContext(AppDispatchContext);
+
+  const userSignIn = () => {
+    appDispatch({ type: "signIn", payload: userData, target: "user" }); // FOR DEV AND TESTING ONLY
+  };
 
   return (
     <Box as="header" py={5} px={6} bg="gray.700">
@@ -25,7 +30,7 @@ function Navbar() {
               <Text>{shortAddress(userData.address)}</Text>
             </HStack>
           ) : (
-            <Button variant="outline" colorScheme="twitter">
+            <Button variant="outline" colorScheme="twitter" onClick={userSignIn}>
               CONNECT
             </Button>
           )}
