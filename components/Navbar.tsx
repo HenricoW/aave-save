@@ -5,15 +5,26 @@ import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu";
 import Image from "next/image";
 import { useContext } from "react";
 import styles from "../styles/Navbar.module.css";
-import { shortAddress } from "../utils/utilFunctions";
+import { shortAddress, getUserWalletAmounts } from "../utils/utilFunctions";
+// import { getUserBorrowedAmounts, getUserDepositAmounts } from "../utils/utilFunctions";
+import { getWeb3 } from "../web3/web3";
 import { AppContext, AppDispatchContext } from "./Layout";
 
 function Navbar() {
   const { isUserConnected, userData } = useContext(AppContext);
   const appDispatch = useContext(AppDispatchContext);
 
-  const userSignIn = () => {
-    appDispatch({ type: "signIn", payload: userData, target: "user" }); // FOR DEV AND TESTING ONLY
+  const userSignIn = async () => {
+    const wallet = await getWeb3();
+    const theUserData = { ...userData, address: await wallet.signer.getAddress() };
+
+    // getUserWalletAmounts();
+    // getUserDepositAmounts();
+    // getUserBorrowedAmounts();
+
+    // commit objects to state
+    appDispatch({ type: "signIn", payload: theUserData, target: "user" });
+    appDispatch({ type: "setWeb3", payload: wallet, target: "web3" });
   };
 
   return (

@@ -1,6 +1,7 @@
 import { initAppState } from "../../components/Layout";
-import { allTokenData, tokenDataType, defaultUserAmounts, userDataType } from "../../utils/dummyData";
+import { allTokenData, tokenDataType, defaultUserAmounts, userDataType, AppStateType } from "../../utils/dummyData";
 import { getTotTokensValue } from "../../utils/utilFunctions";
+import { ProviderType, SignerType } from "../../web3/web3";
 
 export const collateralReducer = (
   state: typeof defaultUserAmounts,
@@ -38,7 +39,7 @@ export const getUserAmounts = (userData: userDataType, tknData: tokenDataType) =
   };
 };
 
-const userReducer = (state: typeof initAppState, action: { type: string; payload: typeof initAppState.userData }) => {
+const userReducer = (state: AppStateType, action: { type: string; payload: userDataType }) => {
   switch (action.type) {
     case "signIn":
       const userAmounts = getUserAmounts(action.payload, state.selectedToken); // set user amounts
@@ -53,7 +54,7 @@ const userReducer = (state: typeof initAppState, action: { type: string; payload
   }
 };
 
-const tokenReducer = (state: typeof initAppState, action: { type: string; payload: string }) => {
+const tokenReducer = (state: AppStateType, action: { type: string; payload: string }) => {
   switch (action.type) {
     case "selectToken":
       const tData = allTokenData.find((tkn) => tkn.ticker === action.payload);
@@ -65,15 +66,34 @@ const tokenReducer = (state: typeof initAppState, action: { type: string; payloa
   }
 };
 
-export const appReducer = (
-  state: typeof initAppState,
-  action: { type: string; payload: any; target: "user" | "token" }
+const web3Reducer = (
+  state: AppStateType,
+  action: { type: string; payload: { provider: ProviderType | null; signer: SignerType | null } }
 ) => {
+  switch (action.type) {
+    case "setWeb3":
+      return { ...state, web3: { provider: action.payload.provider, signer: action.payload.signer } };
+    case "clearWeb3":
+      return { ...state, web3: { provider: null, signer: null } };
+    default:
+      return state;
+  }
+};
+
+export type AppActionType = {
+  type: string;
+  payload: any;
+  target: "user" | "token" | "web3";
+};
+
+export const appReducer = (state: typeof initAppState, action: AppActionType) => {
   switch (action.target) {
     case "user":
       return userReducer(state, { type: action.type, payload: action.payload });
     case "token":
       return tokenReducer(state, { type: action.type, payload: action.payload });
+    case "web3":
+      return web3Reducer(state, { type: action.type, payload: action.payload });
     default:
       return state;
   }
