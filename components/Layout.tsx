@@ -13,6 +13,7 @@ export const initAppState: AppStateType = {
     provider: null,
     signer: null,
   },
+  contracts: null,
 };
 
 type LayoutProps = {

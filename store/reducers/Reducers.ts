@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import { initAppState } from "../../components/Layout";
 import { allTokenData, tokenDataType, defaultUserAmounts, userDataType, AppStateType } from "../../utils/dummyData";
 import { getTotTokensValue } from "../../utils/utilFunctions";
@@ -80,10 +81,29 @@ const web3Reducer = (
   }
 };
 
+const contractsReducer = (
+  state: AppStateType,
+  action: {
+    type: string;
+    payload: {
+      [contrName: string]: ethers.Contract;
+    } | null;
+  }
+) => {
+  switch (action.type) {
+    case "setContracts":
+      return { ...state, contracts: action.payload };
+    case "clearContracts":
+      return { ...state, contracts: null };
+    default:
+      return state;
+  }
+};
+
 export type AppActionType = {
   type: string;
   payload: any;
-  target: "user" | "token" | "web3";
+  target: "user" | "token" | "web3" | "contracts";
 };
 
 export const appReducer = (state: typeof initAppState, action: AppActionType) => {
@@ -94,6 +114,8 @@ export const appReducer = (state: typeof initAppState, action: AppActionType) =>
       return tokenReducer(state, { type: action.type, payload: action.payload });
     case "web3":
       return web3Reducer(state, { type: action.type, payload: action.payload });
+    case "contracts":
+      return contractsReducer(state, { type: action.type, payload: action.payload });
     default:
       return state;
   }

@@ -3,29 +3,55 @@ import { HamburgerIcon } from "@chakra-ui/icons";
 import { Box, Heading, HStack, Text } from "@chakra-ui/layout";
 import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu";
 import Image from "next/image";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import styles from "../styles/Navbar.module.css";
 import { shortAddress, getUserWalletAmounts } from "../utils/utilFunctions";
 // import { getUserBorrowedAmounts, getUserDepositAmounts } from "../utils/utilFunctions";
-import { getWeb3 } from "../web3/web3";
+import { getContracts, getWeb3 } from "../web3/web3";
 import { AppContext, AppDispatchContext } from "./Layout";
 
 function Navbar() {
-  const { isUserConnected, userData } = useContext(AppContext);
+  const { isUserConnected, userData, web3 } = useContext(AppContext);
   const appDispatch = useContext(AppDispatchContext);
+
+  const [netwName, setNetwName] = useState("");
 
   const userSignIn = async () => {
     const wallet = await getWeb3();
-    const theUserData = { ...userData, address: await wallet.signer.getAddress() };
+    const userAddy = await wallet.signer.getAddress();
+    const theUserData = { ...userData, address: userAddy };
 
     // getUserWalletAmounts();
     // getUserDepositAmounts();
     // getUserBorrowedAmounts();
 
+    // contracts
+    const netw = await wallet.provider?.getNetwork();
+    netw.chainId === 4 || netw.chainId === 42 ? setNetwName(netw.name) : setNetwName("Unsupported Network");
+    const contracts = getContracts(netw.chainId, wallet.provider);
+
     // commit objects to state
     appDispatch({ type: "signIn", payload: theUserData, target: "user" });
     appDispatch({ type: "setWeb3", payload: wallet, target: "web3" });
+    appDispatch({ type: "setContracts", payload: contracts, target: "contracts" });
+
+    window.localStorage.setItem("userData", JSON.stringify({ isUserConnected: true, userAddr: userAddy }));
   };
+
+  useEffect(() => {
+    const userData = window.localStorage.getItem("userData") || "";
+    const userDataObj = JSON.parse(userData);
+
+    if (userDataObj?.isUserConnected) userSignIn();
+  }, []);
+
+  // reload on network change
+  if (web3.provider && web3.provider.listenerCount("network") < 1) {
+    web3.provider.on("network", (newNetw, oldNetw) => {
+      console.log("network change detected");
+      if (oldNetw) window.location.reload();
+    });
+  }
 
   return (
     <Box as="header" py={5} px={6} bg="gray.700">
@@ -36,10 +62,21 @@ function Navbar() {
         </HStack>
         <HStack spacing={isUserConnected ? "4" : "2"}>
           {isUserConnected ? (
-            <HStack spacing="3">
-              <Image height="40px" width="40px" className={styles.accountImg} src={userData.blockie} />
-              <Text>{shortAddress(userData.address)}</Text>
-            </HStack>
+            <>
+              <Text
+                border="1px"
+                borderColor="gray.400"
+                p="2"
+                borderRadius="md"
+                background={(netwName.length > 12 ? "orange" : "green") + ".700"}
+              >
+                {netwName}
+              </Text>
+              <HStack spacing="3">
+                <Image height="40px" width="40px" className={styles.accountImg} src={userData.blockie} />
+                <Text>{shortAddress(userData.address)}</Text>
+              </HStack>
+            </>
           ) : (
             <Button variant="outline" colorScheme="twitter" onClick={userSignIn}>
               CONNECT
