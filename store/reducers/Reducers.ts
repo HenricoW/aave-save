@@ -43,11 +43,15 @@ export const getUserAmounts = (userData: userDataType, tknData: tokenDataType) =
 const userReducer = (state: AppStateType, action: { type: string; payload: userDataType }) => {
   switch (action.type) {
     case "signIn":
-      const userAmounts = getUserAmounts(action.payload, state.selectedToken); // set user amounts
+      const userAmounts = getUserAmounts(action.payload, state.selectedToken);
       return { ...state, isUserConnected: true, userData: action.payload, userAmounts };
     case "signOut":
       return { ...state, isUserConnected: false, userData: initAppState.userData, userAmounts: defaultUserAmounts };
-    case "updateAmounts":
+    case "setWalletAmts":
+      const newUdata = { ...state.userData, wallet: action.payload.wallet }; // extract only wallet vals for update
+      const uAmounts1 = getUserAmounts(newUdata, state.selectedToken);
+      return { ...state, isUserConnected: true, userData: newUdata, uAmounts1 };
+    case "setDepBorrAmts":
       // TODO
       return state;
     default:

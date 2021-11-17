@@ -2,11 +2,22 @@ import { Box, Container, Text } from "@chakra-ui/layout";
 import { CircularProgress, CircularProgressLabel } from "@chakra-ui/progress";
 import Image from "next/image";
 import style from "../styles/AccSummary.module.css";
-import React, { useContext } from "react";
-import { AppContext } from "./Layout";
+import React, { useContext, useEffect } from "react";
+import { AppContext, AppDispatchContext } from "./Layout";
+import { getWalletBalances } from "../utils/utilFunctions";
 
 function AccSummary() {
-  const { userData, userAmounts, isUserConnected } = useContext(AppContext);
+  const { userData, userAmounts, isUserConnected, contracts } = useContext(AppContext);
+  const appDispatch = useContext(AppDispatchContext);
+
+  useEffect(() => {
+    if (contracts) {
+      (async () => {
+        const payload = await getWalletBalances(userData.address, contracts);
+        appDispatch({ type: "setWalletAmts", payload, target: "user" });
+      })();
+    }
+  }, [contracts]);
 
   const { totalDeposits, totalLoaned } = userAmounts;
   const userCollateral = (totalLoaned / totalDeposits) * 100;

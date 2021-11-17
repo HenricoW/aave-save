@@ -5,8 +5,7 @@ import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
 import styles from "../styles/Navbar.module.css";
-import { shortAddress, getUserWalletAmounts } from "../utils/utilFunctions";
-// import { getUserBorrowedAmounts, getUserDepositAmounts } from "../utils/utilFunctions";
+import { shortAddress } from "../utils/utilFunctions";
 import { getContracts, getWeb3 } from "../web3/web3";
 import { AppContext, AppDispatchContext } from "./Layout";
 
@@ -21,21 +20,16 @@ function Navbar() {
     const userAddy = await wallet.signer.getAddress();
     const theUserData = { ...userData, address: userAddy };
 
-    // getUserWalletAmounts();
-    // getUserDepositAmounts();
-    // getUserBorrowedAmounts();
+    appDispatch({ type: "signIn", payload: theUserData, target: "user" });
+    appDispatch({ type: "setWeb3", payload: wallet, target: "web3" });
+    window.localStorage.setItem("userData", JSON.stringify({ isUserConnected: true, userAddr: userAddy }));
 
     // contracts
     const netw = await wallet.provider?.getNetwork();
     netw.chainId === 4 || netw.chainId === 42 ? setNetwName(netw.name) : setNetwName("Unsupported Network");
-    const contracts = getContracts(netw.chainId, wallet.provider);
 
-    // commit objects to state
-    appDispatch({ type: "signIn", payload: theUserData, target: "user" });
-    appDispatch({ type: "setWeb3", payload: wallet, target: "web3" });
+    const contracts = await getContracts(netw.chainId, wallet.provider);
     appDispatch({ type: "setContracts", payload: contracts, target: "contracts" });
-
-    window.localStorage.setItem("userData", JSON.stringify({ isUserConnected: true, userAddr: userAddy }));
   };
 
   useEffect(() => {
