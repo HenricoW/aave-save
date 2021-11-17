@@ -35,3 +35,9 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# other
+/public/blockie_ex.png
+W3SaverContracts.drawio
+public/DAI.svg
+public/USDC.svg
