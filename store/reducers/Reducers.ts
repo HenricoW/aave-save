@@ -22,6 +22,27 @@ export const collateralReducer = (
   }
 };
 
+export const tokenDataReducer = (state: tokenDataType[], action: { type: string; payload: number[] }) => {
+  switch (action.type) {
+    case "setSupplyRates":
+      if (action.payload.length !== state.length) return state;
+
+      let newState = state;
+      for (let i = 0; i < state.length; i++) newState[i].saveRate = action.payload[i];
+
+      return newState;
+    case "setBorrowRates":
+      if (action.payload.length !== state.length) return state;
+
+      newState = state;
+      for (let i = 0; i < state.length; i++) newState[i].saveRate = action.payload[i];
+
+      return newState;
+    default:
+      return state;
+  }
+};
+
 export const getUserAmounts = (userData: userDataType, tknData: tokenDataType) => {
   const decimals = tknData.displayDecimals;
   const walletAmount = (userData.wallet[tknData.ticker] ? userData.wallet[tknData.ticker] : 0).toFixed(decimals);
