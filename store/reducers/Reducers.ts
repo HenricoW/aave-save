@@ -23,20 +23,24 @@ export const collateralReducer = (
 };
 
 export const tokenDataReducer = (state: tokenDataType[], action: { type: string; payload: number[] }) => {
+  if (action.payload.length !== state.length) return state;
+  let newState = state;
+
   switch (action.type) {
-    case "setSupplyRates":
-      if (action.payload.length !== state.length) return state;
-
-      let newState = state;
-      for (let i = 0; i < state.length; i++) newState[i].saveRate = action.payload[i];
-
+    case "setSuppRates":
+      for (let i = 0; i < state.length; i++) {
+        newState[i].saveRate = action.payload[i];
+      }
       return newState;
-    case "setBorrowRates":
-      if (action.payload.length !== state.length) return state;
-
-      newState = state;
-      for (let i = 0; i < state.length; i++) newState[i].saveRate = action.payload[i];
-
+    case "setBorrRates":
+      for (let i = 0; i < state.length; i++) {
+        newState[i].borrRate = action.payload[i];
+      }
+      return newState;
+    case "setPrices":
+      for (let i = 0; i < state.length; i++) {
+        newState[i].price = action.payload[i];
+      }
       return newState;
     default:
       return state;
@@ -71,7 +75,7 @@ const userReducer = (state: AppStateType, action: { type: string; payload: userD
     case "setWalletAmts":
       const newUdata = { ...state.userData, wallet: action.payload.wallet }; // extract only wallet vals for update
       const uAmounts1 = getUserAmounts(newUdata, state.selectedToken);
-      return { ...state, isUserConnected: true, userData: newUdata, uAmounts1 };
+      return { ...state, isUserConnected: true, userData: newUdata, userAmounts: uAmounts1 };
     case "setDepBorrAmts":
       // TODO
       return state;
