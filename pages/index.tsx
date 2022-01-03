@@ -5,13 +5,13 @@ import Head from "next/head";
 import CoinRateCard from "../components/CoinRateCard";
 import AccSummary from "../components/AccSummary";
 import InteractionPanel from "../components/InteractionPanel";
-import { allTokenData } from "../utils/dummyData";
+import { allTokenData, tokenDataType } from "../utils/dummyData";
 import Layout from "../components/Layout";
 import { tokenDataReducer } from "../store/reducers/Reducers";
 import TokenBars from "../components/TokenBars";
 
 // app state independent of user action
-export const TokenContext = createContext(allTokenData);
+export const TokenContext = createContext<tokenDataType[]>([]);
 export const TokenDispatchContext = createContext<React.Dispatch<{ type: string; payload: number[] }>>(() => {});
 
 const Home: NextPage = () => {
@@ -31,8 +31,8 @@ const Home: NextPage = () => {
           <TokenDispatchContext.Provider value={tokenDataDispatch}>
             <AccSummary />
             {isInteractOpen ? <InteractionPanel setIsInteractOpen={setIsInteractOpen} /> : null}
+            <TokenBars setIsInteractOpen={setIsInteractOpen} />
           </TokenDispatchContext.Provider>
-          <TokenBars setIsInteractOpen={setIsInteractOpen} />
         </TokenContext.Provider>
       </Layout>
     </>

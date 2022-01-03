@@ -46,7 +46,7 @@ function CoinRateCard({ tokenDetail, setIsInteractOpen }: CoinRateCardProps) {
             Savings APY
           </Text>
           <Text fontSize="lg" fontWeight="bold">
-            {saveRate.toString()} %
+            {saveRate.toFixed(2)} %
           </Text>
         </VStack>
         <VStack spacing="1">
@@ -54,7 +54,7 @@ function CoinRateCard({ tokenDetail, setIsInteractOpen }: CoinRateCardProps) {
             Borrow APY
           </Text>
           <Text fontSize="lg" fontWeight="bold">
-            {borrRate.toString()} %
+            {borrRate.toFixed(2)} %
           </Text>
         </VStack>
       </Box>

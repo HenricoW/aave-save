@@ -20,10 +20,8 @@ type LayoutProps = {
   children: React.ReactNode;
 };
 
-let dummyDisp: React.Dispatch<AppActionType> = () => {};
-
 export const AppContext = createContext<AppStateType>(initAppState);
-export const AppDispatchContext = createContext(dummyDisp);
+export const AppDispatchContext = createContext<React.Dispatch<AppActionType>>(() => {});
 
 function Layout(props: LayoutProps) {
   const [appState, appDispatch] = useReducer(appReducer, initAppState);
