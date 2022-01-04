@@ -20,9 +20,7 @@ function Navbar() {
     const userAddy = await wallet.signer.getAddress();
     const theUserData = { ...userData, address: userAddy };
 
-    appDispatch({ type: "signIn", payload: theUserData, target: "user" });
     appDispatch({ type: "setWeb3", payload: wallet, target: "web3" });
-    window.localStorage.setItem("userData", JSON.stringify({ isUserConnected: true, userAddr: userAddy }));
 
     // contracts
     const netw = await wallet.provider?.getNetwork();
@@ -30,6 +28,15 @@ function Navbar() {
 
     const contracts = await getContracts(netw.chainId, wallet.provider);
     appDispatch({ type: "setContracts", payload: contracts, target: "contracts" });
+    console.log("w3saver Addr: ", contracts.w3Saver.address);
+
+    // account info
+    const userAccAddr = await contracts["w3Saver"].getAccAddr(userAddy);
+    appDispatch({ type: "signIn", payload: { ...theUserData, appWallet: userAccAddr }, target: "user" });
+    window.localStorage.setItem("userData", JSON.stringify({ isUserConnected: true, userAddr: userAddy }));
+
+    console.log("user account address: ", userAccAddr);
+    console.log("user addr: ", userAddy);
   };
 
   useEffect(() => {
@@ -37,6 +44,14 @@ function Navbar() {
     const userDataObj = JSON.parse(userData);
 
     if (userDataObj?.isUserConnected) userSignIn();
+
+    // rerender pg on Acc change
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", (accs: string[]) => {
+        console.log("account change detected", accs[0]);
+        userSignIn();
+      });
+    }
   }, []);
 
   // reload on network change
