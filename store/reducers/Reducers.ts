@@ -1,6 +1,13 @@
 import { ethers } from "ethers";
 import { initAppState } from "../../components/Layout";
-import { allTokenData, tokenDataType, defaultUserAmounts, userDataType, AppStateType } from "../../utils/dummyData";
+import {
+  allTokenData,
+  tokenDataType,
+  defaultUserAmounts,
+  userDataType,
+  AppStateType,
+  tokenValues,
+} from "../../utils/dummyData";
 import { getTotTokensValue } from "../../utils/utilFunctions";
 import { ProviderType, SignerType } from "../../web3/web3";
 
@@ -24,64 +31,68 @@ export const collateralReducer = (
 
 export const tokenDataReducer = (state: tokenDataType[], action: { type: string; payload: number[] }) => {
   if (action.payload.length !== state.length) return state;
-  let newState = state;
+  let newState: { [key: string]: any }[] = state,
+    selector: string;
 
   switch (action.type) {
     case "setSuppRates":
-      for (let i = 0; i < state.length; i++) {
-        newState[i].saveRate = action.payload[i];
-      }
-      return newState;
+      selector = "saveRate";
+      break;
     case "setBorrRates":
-      for (let i = 0; i < state.length; i++) {
-        newState[i].borrRate = action.payload[i];
-      }
-      return newState;
+      selector = "borrRate";
+      break;
     case "setPrices":
-      for (let i = 0; i < state.length; i++) {
-        newState[i].price = action.payload[i];
-      }
-      return newState;
+      selector = "price";
+      break;
     default:
       return state;
   }
+
+  for (let i = 0; i < state.length; i++) newState[i][selector] = action.payload[i];
+  return newState as tokenDataType[];
 };
 
 export const getUserAmounts = (userData: userDataType, tknData: tokenDataType) => {
   const decimals = tknData.displayDecimals;
-  const walletAmount = (userData.wallet[tknData.ticker] ? userData.wallet[tknData.ticker] : 0).toFixed(decimals);
-  const borrowedAmount = (userData.borrowed[tknData.ticker] ? userData.borrowed[tknData.ticker] : 0).toFixed(decimals);
-  const depositAmount = (userData.deposits[tknData.ticker] ? userData.deposits[tknData.ticker] : 0).toFixed(decimals);
+  const uAmounts: { [category: string]: string } = {};
+  const uDataSlice: { [category: string]: any } = userData;
+  const categories = ["wallet", "account", "borrowed", "deposits"];
+
+  for (let i = 0; i < categories.length; i++)
+    uAmounts[categories[i] + "Amount"] = (
+      uDataSlice[categories[i]][tknData.ticker] ? uDataSlice[categories[i]][tknData.ticker] : 0
+    ).toFixed(decimals); // check if this tickers value has been set, default to zero
 
   const totalDeposits = getTotTokensValue(allTokenData, userData.deposits);
   const totalLoaned = getTotTokensValue(allTokenData, userData.borrowed);
 
-  return {
-    walletAmount,
-    depositAmount,
-    borrowedAmount,
-    totalDeposits,
-    totalLoaned,
-  };
+  return { ...uAmounts, totalDeposits, totalLoaned };
 };
 
 const userReducer = (state: AppStateType, action: { type: string; payload: userDataType }) => {
+  let userData: userDataType = state.userData; // default value
+
   switch (action.type) {
     case "signIn":
-      const userAmounts = getUserAmounts(action.payload, state.selectedToken);
-      return { ...state, isUserConnected: true, userData: action.payload, userAmounts };
+      userData = action.payload;
+      break;
     case "signOut":
-      return { ...state, isUserConnected: false, userData: initAppState.userData, userAmounts: defaultUserAmounts };
+      return { ...state, isUserConnected: false, userData: initAppState.userData, userAmounts: defaultUserAmounts }; // defaults
     case "setWalletAmts":
-      const newUdata = { ...state.userData, wallet: action.payload.wallet }; // extract only wallet vals for update
-      const uAmounts1 = getUserAmounts(newUdata, state.selectedToken);
-      return { ...state, isUserConnected: true, userData: newUdata, userAmounts: uAmounts1 };
-    case "setDepBorrAmts":
-      // TODO
-      return state;
+      userData = { ...state.userData, wallet: action.payload.wallet }; // extract only wallet vals for update
+      break;
+    case "setAcc&DepAmts":
+      userData = { ...state.userData, account: action.payload.account, deposits: action.payload.deposits };
+      break;
+    case "setBorrAmts":
+      userData = { ...state.userData, borrowed: action.payload.borrowed };
+      break;
     default:
       return state;
   }
+
+  const userAmounts = getUserAmounts(userData, state.selectedToken);
+  return { ...state, isUserConnected: true, userData, userAmounts };
 };
 
 const tokenReducer = (state: AppStateType, action: { type: string; payload: string }) => {
