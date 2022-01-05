@@ -1,8 +1,6 @@
-import { Stack } from "@chakra-ui/layout";
 import type { NextPage } from "next";
 import React, { createContext, useReducer, useState } from "react";
 import Head from "next/head";
-import CoinRateCard from "../components/CoinRateCard";
 import AccSummary from "../components/AccSummary";
 import InteractionPanel from "../components/InteractionPanel";
 import { allTokenData, tokenDataType } from "../utils/dummyData";
@@ -30,7 +28,9 @@ const Home: NextPage = () => {
         <TokenContext.Provider value={tokenData}>
           <TokenDispatchContext.Provider value={tokenDataDispatch}>
             <AccSummary />
-            {isInteractOpen ? <InteractionPanel setIsInteractOpen={setIsInteractOpen} /> : null}
+            {isInteractOpen ? (
+              <InteractionPanel setIsInteractOpen={setIsInteractOpen} isInteractOpen={isInteractOpen} />
+            ) : null}
             <TokenBars setIsInteractOpen={setIsInteractOpen} />
           </TokenDispatchContext.Provider>
         </TokenContext.Provider>

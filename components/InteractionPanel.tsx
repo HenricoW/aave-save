@@ -2,23 +2,55 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/tabs";
 import { Button } from "@chakra-ui/button";
 import { Box, Container, HStack, Text, VStack } from "@chakra-ui/layout";
 import Image from "next/image";
-import { createContext, Dispatch, SetStateAction, useContext, useReducer } from "react";
-import { defaultUserAmounts } from "../utils/dummyData";
+import { createContext, Dispatch, SetStateAction, useContext, useReducer, useState } from "react";
+import { defaultUserAmounts, ZERO_ADDR } from "../utils/dummyData";
 import PanelInputGroup from "./PanelInputGroup";
 import { collateralReducer } from "../store/reducers/Reducers";
 import CollateralBar from "./CollateralBar";
 import { AppContext } from "./Layout";
+import { ethers, Signer } from "ethers";
+import { userAccABI } from "../utils/ABIs";
+import { toWei } from "../utils/utilFunctions";
 
 export type InteractionPanelProps = {
   setIsInteractOpen: Dispatch<SetStateAction<boolean>>;
+  isInteractOpen: boolean;
 };
 
 export const collateralContext = createContext(defaultUserAmounts); // for separate coll calcs
 
-function InteractionPanel({ setIsInteractOpen }: InteractionPanelProps) {
-  const { selectedToken, userAmounts, isUserConnected } = useContext(AppContext);
-
+function InteractionPanel({ setIsInteractOpen, isInteractOpen }: InteractionPanelProps) {
+  const { selectedToken, userAmounts, isUserConnected, userData, web3, contracts } = useContext(AppContext);
   const [usrFieldState, fieldsDispatch] = useReducer(collateralReducer, userAmounts);
+
+  const [isAccOpsOpen, setIsAccOpsOpen] = useState(false);
+
+  const accContr = new ethers.Contract(userData.appWallet, userAccABI, web3?.signer as Signer);
+
+  const onFormSubmit = async (fieldAction: string, value: number) => {
+    const tckr = selectedToken.ticker;
+    if (contracts) {
+      const tknAddr = contracts[tckr].address;
+      const cTknAddr = contracts[`c${tckr}`].address;
+      const val = tckr === "wBTC" ? toWei(value, 8) : toWei(value);
+
+      switch (fieldAction) {
+        case "fundAccount":
+          await contracts[tckr].connect(web3?.signer as Signer).approve(accContr.address, val);
+          await accContr.fundAccount(tknAddr, val, { gasLimit: 80_000 });
+          break;
+        case "drawDown":
+        case "deposit":
+          await accContr.deposit(cTknAddr, val);
+          break;
+        case "depositSub":
+        case "loanedAdd":
+        case "loanedSub":
+        default:
+          return;
+      }
+    }
+  };
 
   return (
     <collateralContext.Provider value={usrFieldState}>
@@ -37,7 +69,7 @@ function InteractionPanel({ setIsInteractOpen }: InteractionPanelProps) {
                   Savings APY
                 </Text>
                 <Text fontSize="lg" fontWeight="bold" color="green.300">
-                  {selectedToken.saveRate.toString()} %
+                  {selectedToken.saveRate.toFixed(2)} %
                 </Text>
               </VStack>
               <VStack spacing="1">
@@ -45,7 +77,7 @@ function InteractionPanel({ setIsInteractOpen }: InteractionPanelProps) {
                   Borrow APY
                 </Text>
                 <Text fontSize="lg" fontWeight="bold" color="orange.300">
-                  {selectedToken.borrRate.toString()} %
+                  {selectedToken.borrRate.toFixed(2)} %
                 </Text>
               </VStack>
             </Box>
@@ -58,22 +90,54 @@ function InteractionPanel({ setIsInteractOpen }: InteractionPanelProps) {
               80 %
             </Text>
           </Box>
-          <Tabs align="center" colorScheme="twitter">
-            <TabList>
-              <Tab>Save</Tab>
-              <Tab>Borrow</Tab>
-            </TabList>
-            <TabPanels>
-              <TabPanel>
-                <PanelInputGroup panelType={"savePanel"} fieldsDispatch={fieldsDispatch} />
-              </TabPanel>
-              <TabPanel>
-                <PanelInputGroup panelType={"borrowPanel"} fieldsDispatch={fieldsDispatch} />
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
+
+          {userData.appWallet === ZERO_ADDR ? null : (
+            <Box d="flex" justifyContent="center" mt="2">
+              <Button
+                variant="outline"
+                colorScheme="twitter"
+                my="1"
+                onClick={() => {
+                  setIsInteractOpen(true);
+                  isInteractOpen ? setIsAccOpsOpen(!isAccOpsOpen) : setIsAccOpsOpen(true);
+                }}
+              >
+                {isAccOpsOpen ? "Switch to SAVE AND BORROW" : "Switch to ADD/REMOVE FUNDS"}
+              </Button>
+            </Box>
+          )}
+
+          {isAccOpsOpen ? (
+            <Box mt="2">
+              <PanelInputGroup panelType={"fundingPanel"} fieldsDispatch={fieldsDispatch} onFormSubmit={onFormSubmit} />
+            </Box>
+          ) : (
+            <Tabs align="center" colorScheme="twitter">
+              <TabList>
+                <Tab>Save</Tab>
+                <Tab>Borrow</Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel>
+                  <PanelInputGroup
+                    panelType={"savePanel"}
+                    fieldsDispatch={fieldsDispatch}
+                    onFormSubmit={onFormSubmit}
+                  />
+                </TabPanel>
+                <TabPanel>
+                  <PanelInputGroup
+                    panelType={"borrowPanel"}
+                    fieldsDispatch={fieldsDispatch}
+                    onFormSubmit={onFormSubmit}
+                  />
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          )}
+
           <Container d="flex" flexDir="column" maxW="container.md" pt="2">
-            <CollateralBar />
+            {isAccOpsOpen ? null : <CollateralBar />}
             <Button
               variant="outline"
               colorScheme="red"

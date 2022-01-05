@@ -29,7 +29,11 @@ function AccSummary() {
           appDispatch({ type: "setWalletAmts", payload, target: "user" });
         }
 
-        // await getUserDepositAmounts(userData.appWallet, contracts);
+        console.log("app wallet: ", userData.appWallet);
+        if (userData.appWallet !== ZERO_ADDR) {
+          const payload = await getUserDepositAmounts(userData.appWallet, contracts);
+          appDispatch({ type: "setAcc&DepAmts", payload, target: "user" });
+        }
       })();
     }
   }, [contracts, userData.address]);

@@ -16,6 +16,7 @@ type PanelInputGroupProps = {
       totalLoaned: number;
     };
   }>;
+  onFormSubmit: (fieldAction: string, value: number) => Promise<void>;
 };
 
 type fieldAmtType = {
@@ -24,7 +25,7 @@ type fieldAmtType = {
 
 const btnText = "submit";
 
-function PanelInputGroup({ panelType, fieldsDispatch }: PanelInputGroupProps) {
+function PanelInputGroup({ panelType, fieldsDispatch, onFormSubmit }: PanelInputGroupProps) {
   const [fieldAmt, setFieldAmt] = useState<fieldAmtType>({ top: "0", bottom: "0" });
   const [topOutOfRange, setTopOutOfRange] = useState(false);
   const [bottomOutOfRange, setBottomOutOfRange] = useState(false);
@@ -61,12 +62,14 @@ function PanelInputGroup({ panelType, fieldsDispatch }: PanelInputGroupProps) {
       selektah[pos](false);
     }
 
-    const action = {
-      type: inputDispatchConfig[panelType][pos],
-      payload: theVal * price,
-      origTotals: { totalDeposits, totalLoaned },
-    };
-    fieldsDispatch(action);
+    if (panelType !== "fundingPanel") {
+      const action = {
+        type: inputDispatchConfig[panelType][pos],
+        payload: theVal * price,
+        origTotals: { totalDeposits, totalLoaned },
+      };
+      fieldsDispatch(action);
+    }
   };
 
   // input field labels
@@ -93,7 +96,11 @@ function PanelInputGroup({ panelType, fieldsDispatch }: PanelInputGroupProps) {
             outOfRange={topOutOfRange}
           />
         </FormControl>
-        <Button colorScheme={fieldConfig.btnColor} variant="outline">
+        <Button
+          colorScheme={fieldConfig.btnColor}
+          variant="outline"
+          onClick={() => onFormSubmit(fieldConfig.top.ethRequest, +fieldAmt.top)}
+        >
           {btnText.toUpperCase()}
         </Button>
       </HStack>
@@ -107,7 +114,11 @@ function PanelInputGroup({ panelType, fieldsDispatch }: PanelInputGroupProps) {
             outOfRange={bottomOutOfRange}
           />
         </FormControl>
-        <Button colorScheme={fieldConfig.btnColor} variant="outline">
+        <Button
+          colorScheme={fieldConfig.btnColor}
+          variant="outline"
+          onClick={() => onFormSubmit(fieldConfig.bottom.ethRequest, +fieldAmt.bottom)}
+        >
           {btnText.toUpperCase()}
         </Button>
       </HStack>
