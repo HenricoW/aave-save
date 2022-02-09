@@ -7,6 +7,7 @@ import { allTokenData, tokenDataType } from "../utils/dummyData";
 import Layout from "../components/Layout";
 import { tokenDataReducer } from "../store/reducers/Reducers";
 import TokenBars from "../components/TokenBars";
+import ContractActions from "../components/ContractActions";
 
 // app state independent of user action
 export const TokenContext = createContext<tokenDataType[]>([]);
@@ -29,7 +30,9 @@ const Home: NextPage = () => {
           <TokenDispatchContext.Provider value={tokenDataDispatch}>
             <AccSummary />
             {isInteractOpen ? (
-              <InteractionPanel setIsInteractOpen={setIsInteractOpen} isInteractOpen={isInteractOpen} />
+              <ContractActions>
+                <InteractionPanel setIsInteractOpen={setIsInteractOpen} isInteractOpen={isInteractOpen} />
+              </ContractActions>
             ) : null}
             <TokenBars setIsInteractOpen={setIsInteractOpen} />
           </TokenDispatchContext.Provider>

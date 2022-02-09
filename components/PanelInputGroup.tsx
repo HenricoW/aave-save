@@ -5,6 +5,7 @@ import { Button } from "@chakra-ui/button";
 import { getInputConfig, inputDispatchConfig } from "../utils/dummyData";
 import NumInput from "./NumInput";
 import { AppContext } from "./Layout";
+import { PanelInputCtxt } from "./ContractActions";
 
 type PanelInputGroupProps = {
   panelType: string;
@@ -16,23 +17,18 @@ type PanelInputGroupProps = {
       totalLoaned: number;
     };
   }>;
-  onFormSubmit: (fieldAction: string, value: number) => Promise<void>;
-};
-
-type fieldAmtType = {
-  [pos: string]: string;
 };
 
 const btnText = "submit";
 
-function PanelInputGroup({ panelType, fieldsDispatch, onFormSubmit }: PanelInputGroupProps) {
-  const [fieldAmt, setFieldAmt] = useState<fieldAmtType>({ top: "0", bottom: "0" });
+function PanelInputGroup({ panelType, fieldsDispatch }: PanelInputGroupProps) {
+  const [fieldAmt, setFieldAmt] = useState<{ [pos: string]: string }>({ top: "0", bottom: "0" });
   const [topOutOfRange, setTopOutOfRange] = useState(false);
   const [bottomOutOfRange, setBottomOutOfRange] = useState(false);
 
+  const onFormSubmit = useContext(PanelInputCtxt);
   const { selectedToken, userAmounts } = useContext(AppContext);
   const { price, displayDecimals } = selectedToken;
-  const { totalDeposits, totalLoaned } = userAmounts;
 
   useEffect(() => {
     setFieldAmt({ top: "0", bottom: "0" });
@@ -43,7 +39,6 @@ function PanelInputGroup({ panelType, fieldsDispatch, onFormSubmit }: PanelInput
   // input change handler
   const handleChange = (val: string, pos: "top" | "bottom") => {
     if (val === "") return;
-    const theVal = parseFloat(val);
     const selektah: {
       [pos: string]: (arg: boolean) => void;
     } = {
@@ -56,31 +51,36 @@ function PanelInputGroup({ panelType, fieldsDispatch, onFormSubmit }: PanelInput
 
     // validation feedback
     const limitAmount = fieldConfig[pos].helperAmount;
-    if (theVal > parseFloat(limitAmount) || theVal < 0) {
-      selektah[pos](true);
-    } else {
-      selektah[pos](false);
-    }
+    const theVal = parseFloat(val);
+    theVal > parseFloat(limitAmount) || theVal < 0 ? selektah[pos](true) : selektah[pos](false);
 
     if (panelType !== "fundingPanel") {
       const action = {
         type: inputDispatchConfig[panelType][pos],
         payload: theVal * price,
-        origTotals: { totalDeposits, totalLoaned },
+        origTotals: { totalDeposits: userAmounts.totalDeposits, totalLoaned: userAmounts.totalLoaned },
       };
       fieldsDispatch(action);
     }
   };
 
   // input field labels
-  const inputLabels = (pos: "top" | "bottom") => {
+  const inputWithLabel = (pos: "top" | "bottom") => {
     return (
-      <Box d="flex" alignItems="center" justifyContent="space-between">
-        <FormLabel>{fieldConfig[pos].title}</FormLabel>
-        <Text fontSize="sm" color="gray.500">
-          {fieldConfig[pos].helperText}: {fieldConfig[pos].helperAmount + " " + selectedToken.ticker}
-        </Text>
-      </Box>
+      <>
+        <Box d="flex" alignItems="center" justifyContent="space-between">
+          <FormLabel>{fieldConfig[pos].title}</FormLabel>
+          <Text fontSize="sm" color="gray.500">
+            {fieldConfig[pos].helperText}: {fieldConfig[pos].helperAmount + " " + selectedToken.ticker}
+          </Text>
+        </Box>
+        <NumInput
+          value={fieldAmt[pos]}
+          onChange={(val) => handleChange(val, pos)}
+          precision={displayDecimals}
+          outOfRange={(pos as string) === " top" ? topOutOfRange : bottomOutOfRange}
+        />
+      </>
     );
   };
 
@@ -88,13 +88,7 @@ function PanelInputGroup({ panelType, fieldsDispatch, onFormSubmit }: PanelInput
     <>
       <HStack alignItems="end">
         <FormControl id={panelType + "-top"} mt="0">
-          {inputLabels("top")}
-          <NumInput
-            value={fieldAmt.top}
-            onChange={(val) => handleChange(val, "top")}
-            precision={displayDecimals}
-            outOfRange={topOutOfRange}
-          />
+          {inputWithLabel("top")}
         </FormControl>
         <Button
           colorScheme={fieldConfig.btnColor}
@@ -106,13 +100,7 @@ function PanelInputGroup({ panelType, fieldsDispatch, onFormSubmit }: PanelInput
       </HStack>
       <HStack alignItems="end">
         <FormControl id={panelType + "-bottom"} mt="6">
-          {inputLabels("bottom")}
-          <NumInput
-            value={fieldAmt.bottom}
-            onChange={(val) => handleChange(val, "bottom")}
-            precision={displayDecimals}
-            outOfRange={bottomOutOfRange}
-          />
+          {inputWithLabel("bottom")}
         </FormControl>
         <Button
           colorScheme={fieldConfig.btnColor}
