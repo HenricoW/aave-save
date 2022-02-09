@@ -5,7 +5,7 @@ import style from "../styles/AccSummary.module.css";
 import React, { useContext, useEffect } from "react";
 import { AppContext, AppDispatchContext } from "./Layout";
 import { getTknPrices, getTokenRates, getUserDepositAmounts, getWalletBalances } from "../utils/utilFunctions";
-import { TokenContext, TokenDispatchContext } from "../pages";
+import { TokenDispatchContext } from "../pages";
 import { ZERO_ADDR } from "../utils/dummyData";
 import { Button } from "@chakra-ui/react";
 import { Signer } from "ethers";
@@ -14,7 +14,6 @@ function AccSummary() {
   const { userData, userAmounts, isUserConnected, contracts, web3 } = useContext(AppContext);
   const appDispatch = useContext(AppDispatchContext);
 
-  const tokenData = useContext(TokenContext);
   const tknDataDispatch = useContext(TokenDispatchContext);
 
   useEffect(() => {
@@ -32,7 +31,7 @@ function AccSummary() {
         console.log("app wallet: ", userData.appWallet);
         if (userData.appWallet !== ZERO_ADDR) {
           const payload = await getUserDepositAmounts(userData.appWallet, contracts);
-          appDispatch({ type: "setAcc&DepAmts", payload, target: "user" });
+          appDispatch({ type: "setAccAmts", payload, target: "user" });
         }
       })();
     }
@@ -60,7 +59,7 @@ function AccSummary() {
   };
 
   const { totalDeposits, totalLoaned } = userAmounts;
-  const userCollateral = (totalLoaned / totalDeposits) * 100;
+  const userCollateral = totalDeposits < 0.01 ? 0 : (totalLoaned / totalDeposits) * 100;
 
   return (
     <>

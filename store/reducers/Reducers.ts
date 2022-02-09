@@ -1,13 +1,6 @@
 import { ethers } from "ethers";
 import { initAppState } from "../../components/Layout";
-import {
-  allTokenData,
-  tokenDataType,
-  defaultUserAmounts,
-  userDataType,
-  AppStateType,
-  tokenValues,
-} from "../../utils/dummyData";
+import { allTokenData, tokenDataType, defaultUserAmounts, userDataType, AppStateType } from "../../utils/dummyData";
 import { getTotTokensValue } from "../../utils/utilFunctions";
 import { ProviderType, SignerType } from "../../web3/web3";
 
@@ -81,27 +74,30 @@ const userReducer = (state: AppStateType, action: { type: string; payload: userD
     case "setWalletAmts":
       userData = { ...state.userData, wallet: action.payload.wallet }; // extract only wallet vals for update
       break;
-    case "setAcc&DepAmts":
-      userData = { ...state.userData, account: action.payload.account, deposits: action.payload.deposits };
-      break;
-    case "setBorrAmts":
-      userData = { ...state.userData, borrowed: action.payload.borrowed };
+    case "setAccAmts":
+      userData = {
+        ...state.userData,
+        account: action.payload.account,
+        deposits: action.payload.deposits,
+        borrowed: action.payload.borrowed,
+      };
       break;
     default:
       return state;
   }
 
-  const userAmounts = getUserAmounts(userData, state.selectedToken);
-  return { ...state, isUserConnected: true, userData, userAmounts };
+  const uUserAmounts = getUserAmounts(userData, state.selectedToken);
+  return { ...state, isUserConnected: true, userData, userAmounts: { ...state.userAmounts, ...uUserAmounts } };
 };
 
 const tokenReducer = (state: AppStateType, action: { type: string; payload: string }) => {
   switch (action.type) {
     case "selectToken":
-      const tData = allTokenData.find((tkn) => tkn.ticker === action.payload);
-      const tknData = typeof tData === "undefined" ? allTokenData[0] : tData;
-      const userAmounts = getUserAmounts(state.userData, tknData); // set user amounts
-      return { ...state, selectedTicker: action.payload, selectedToken: tknData, userAmounts };
+      const selectedTicker = action.payload;
+      const tData = allTokenData.find((tkn) => tkn.ticker === selectedTicker);
+      const selectedToken = typeof tData === "undefined" ? allTokenData[0] : tData;
+      const uUserAmounts = getUserAmounts(state.userData, selectedToken); // set user amounts
+      return { ...state, selectedTicker, selectedToken, userAmounts: { ...state.userAmounts, ...uUserAmounts } };
     default:
       return state;
   }
@@ -146,7 +142,7 @@ export type AppActionType = {
   target: "user" | "token" | "web3" | "contracts";
 };
 
-export const appReducer = (state: typeof initAppState, action: AppActionType) => {
+export const appReducer = (state: AppStateType, action: AppActionType) => {
   switch (action.target) {
     case "user":
       return userReducer(state, { type: action.type, payload: action.payload });

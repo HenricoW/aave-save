@@ -5,7 +5,7 @@ import { collateralContext } from "./InteractionPanel";
 
 function CollateralBar() {
   const { totalDeposits, totalLoaned } = useContext(collateralContext);
-  const collateral = (totalLoaned / totalDeposits) * 100;
+  const collateral = totalDeposits < 0.01 ? 0 : (totalLoaned / totalDeposits) * 100;
 
   return (
     <>
