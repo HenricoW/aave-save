@@ -43,7 +43,7 @@ function Navbar() {
     const userData = window.localStorage.getItem("userData") || "";
     const userDataObj = JSON.parse(userData);
 
-    if (userDataObj?.isUserConnected) userSignIn();
+    // if (userDataObj?.isUserConnected) userSignIn();
 
     // rerender pg on Acc change
     if (window.ethereum) {

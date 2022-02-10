@@ -4,7 +4,7 @@ import Image from "next/image";
 import style from "../styles/AccSummary.module.css";
 import React, { useContext, useEffect } from "react";
 import { AppContext, AppDispatchContext } from "./Layout";
-import { getTknPrices, getTokenRates, getUserDepositAmounts, getWalletBalances } from "../utils/utilFunctions";
+import { getTknPrices, getUserDepositAmounts, getWalletBalances } from "../utils/utilFunctions";
 import { TokenDispatchContext } from "../pages";
 import { ZERO_ADDR } from "../utils/dummyData";
 import { Button } from "@chakra-ui/react";
@@ -17,12 +17,8 @@ function AccSummary() {
   const tknDataDispatch = useContext(TokenDispatchContext);
 
   useEffect(() => {
-    if (contracts) {
-      (async () => {
-        const suppBorrRates = await getTokenRates(contracts);
-        tknDataDispatch({ type: "setSuppRates", payload: suppBorrRates.supply });
-        tknDataDispatch({ type: "setBorrRates", payload: suppBorrRates.borrow });
-
+    (async () => {
+      if (contracts) {
         if (userData.address !== ZERO_ADDR) {
           const payload = await getWalletBalances(userData.address, contracts);
           appDispatch({ type: "setWalletAmts", payload, target: "user" });
@@ -33,8 +29,8 @@ function AccSummary() {
           const payload = await getUserDepositAmounts(userData.appWallet, contracts);
           appDispatch({ type: "setAccAmts", payload, target: "user" });
         }
-      })();
-    }
+      }
+    })();
   }, [contracts, userData.address]);
 
   useEffect(() => {
