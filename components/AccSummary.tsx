@@ -9,6 +9,7 @@ import { TokenDispatchContext } from "../pages";
 import { ZERO_ADDR } from "../utils/dummyData";
 import { Button } from "@chakra-ui/react";
 import { Signer } from "ethers";
+import WelcomeBlub from "./WelcomeBlub";
 
 function AccSummary() {
   const { userData, userAmounts, isUserConnected, contracts, web3 } = useContext(AppContext);
@@ -117,7 +118,9 @@ function AccSummary() {
             )}
           </Box>
         </Container>
-      ) : null}
+      ) : (
+        <WelcomeBlub />
+      )}
     </>
   );
 }

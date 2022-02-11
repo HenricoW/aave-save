@@ -2,17 +2,19 @@ import { Box, HStack, Text, VStack } from "@chakra-ui/layout";
 import Image from "next/image";
 import { Dispatch, SetStateAction, useContext } from "react";
 import { tokenDataType } from "../utils/dummyData";
-import { AppDispatchContext } from "./Layout";
+import { AppContext, AppDispatchContext } from "./Layout";
 
 export type CoinRateCardProps = {
   tokenDetail: tokenDataType;
   setIsInteractOpen: Dispatch<SetStateAction<boolean>>;
+  onOpen: () => void;
 };
 
-function CoinRateCard({ tokenDetail, setIsInteractOpen }: CoinRateCardProps) {
+function CoinRateCard({ tokenDetail, setIsInteractOpen, onOpen }: CoinRateCardProps) {
   const { ticker, imgUrl, saveRate, borrRate } = tokenDetail;
 
   const appDispatch = useContext(AppDispatchContext);
+  const { isUserConnected } = useContext(AppContext);
 
   const clickHandler = () => {
     appDispatch({ type: "selectToken", payload: tokenDetail.ticker, target: "token" });
@@ -32,7 +34,7 @@ function CoinRateCard({ tokenDetail, setIsInteractOpen }: CoinRateCardProps) {
         background: "gray.600",
         cursor: "pointer",
       }}
-      onClick={clickHandler}
+      onClick={() => (isUserConnected ? clickHandler() : onOpen())}
     >
       <HStack spacing="3">
         <Image height="40px" width="40px" src={imgUrl} />

@@ -91,7 +91,7 @@ function Navbar() {
               CONNECT
             </Button>
           )}
-          <Menu>
+          {/* <Menu>
             <MenuButton
               aria-label="Main menu"
               as={IconButton}
@@ -99,13 +99,12 @@ function Navbar() {
               variant="outline"
               colorScheme="twitter"
             >
-              {/* MENU */}
             </MenuButton>
             <MenuList>
               <MenuItem>Save</MenuItem>
               <MenuItem>Swap</MenuItem>
             </MenuList>
-          </Menu>
+          </Menu> */}
         </HStack>
       </Box>
     </Box>
