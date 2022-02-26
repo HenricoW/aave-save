@@ -32,7 +32,7 @@ function AccSummary() {
         }
       }
     })();
-  }, [contracts, userData.address]);
+  }, [contracts, userData.address, userData.appWallet]);
 
   useEffect(() => {
     (async () => {
@@ -74,7 +74,13 @@ function AccSummary() {
         >
           <Box d="flex" flexWrap="wrap" justifyContent="space-around">
             <Box className="accountValues" d="flex" alignItems="center">
-              <Image src={userData.blockie} width="70px" height="70px" className={style.blockieImg} />
+              <Image
+                src={userData.blockie}
+                width="70px"
+                height="70px"
+                className={style.blockieImg}
+                alt="user blockie"
+              />
               <Box d="flex" flexDir="column" pb="2" ml="4">
                 <Text maxW="260px" color="gray.500" isTruncated>
                   Your Account:

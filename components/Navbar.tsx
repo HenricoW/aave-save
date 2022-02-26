@@ -1,7 +1,5 @@
-import { Button, IconButton } from "@chakra-ui/button";
-import { HamburgerIcon } from "@chakra-ui/icons";
+import { Button } from "@chakra-ui/button";
 import { Box, Heading, HStack, Text } from "@chakra-ui/layout";
-import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
 import styles from "../styles/Navbar.module.css";
@@ -41,7 +39,7 @@ function Navbar() {
 
   useEffect(() => {
     const userData = window.localStorage.getItem("userData") || "";
-    const userDataObj = JSON.parse(userData);
+    // const userDataObj = JSON.parse(userData);
 
     // if (userDataObj?.isUserConnected) userSignIn();
 
@@ -66,7 +64,7 @@ function Navbar() {
     <Box as="header" py={5} px={6} bg="gray.700">
       <Box as="nav" d="flex" alignItems="center" justifyContent="space-between">
         <HStack spacing="4">
-          <Image height="40px" width="40px" src="/aave.7a37d675.svg" />
+          <Image height="40px" width="40px" src="/aave.7a37d675.svg" alt="Web3 Saver" />
           <Heading size="md">Web3 Saver</Heading>
         </HStack>
         <HStack spacing={isUserConnected ? "4" : "2"}>
@@ -82,7 +80,13 @@ function Navbar() {
                 {netwName}
               </Text>
               <HStack spacing="3">
-                <Image height="40px" width="40px" className={styles.accountImg} src={userData.blockie} />
+                <Image
+                  height="40px"
+                  width="40px"
+                  className={styles.accountImg}
+                  src={userData.blockie}
+                  alt="user blockie"
+                />
                 <Text>{shortAddress(userData.address)}</Text>
               </HStack>
             </>
@@ -91,20 +95,6 @@ function Navbar() {
               CONNECT
             </Button>
           )}
-          {/* <Menu>
-            <MenuButton
-              aria-label="Main menu"
-              as={IconButton}
-              icon={<HamburgerIcon />}
-              variant="outline"
-              colorScheme="twitter"
-            >
-            </MenuButton>
-            <MenuList>
-              <MenuItem>Save</MenuItem>
-              <MenuItem>Swap</MenuItem>
-            </MenuList>
-          </Menu> */}
         </HStack>
       </Box>
     </Box>

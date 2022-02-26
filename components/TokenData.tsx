@@ -9,7 +9,7 @@ function TokenData() {
     <>
       <Box d="flex" justifyContent="space-between" py={2} px={4}>
         <HStack spacing="3">
-          <Image height="60px" width="60px" src={selectedToken.imgUrl} />
+          <Image height="60px" width="60px" src={selectedToken.imgUrl} alt={selectedToken.ticker} />
           <Text fontWeight="bold" fontSize="lg">
             {selectedToken.ticker}
           </Text>

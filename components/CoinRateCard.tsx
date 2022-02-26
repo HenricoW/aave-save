@@ -37,7 +37,7 @@ function CoinRateCard({ tokenDetail, setIsInteractOpen, onOpen }: CoinRateCardPr
       onClick={() => (isUserConnected ? clickHandler() : onOpen())}
     >
       <HStack spacing="3">
-        <Image height="40px" width="40px" src={imgUrl} />
+        <Image height="40px" width="40px" src={imgUrl} alt={ticker} />
         <Text fontWeight="bold" fontSize="lg">
           {ticker}
         </Text>
