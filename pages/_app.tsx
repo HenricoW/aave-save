@@ -1,6 +1,9 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { ChakraProvider, CSSReset, extendTheme } from "@chakra-ui/react";
+import { ImageLoader, ImageLoaderProps } from "next/image";
+
+export const imageLoader: ImageLoader = (args: ImageLoaderProps) => args.src;
 
 function MyApp({ Component, pageProps }: AppProps) {
   const theme = extendTheme({

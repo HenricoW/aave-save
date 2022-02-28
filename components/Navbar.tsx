@@ -2,6 +2,7 @@ import { Button } from "@chakra-ui/button";
 import { Box, Heading, HStack, Text } from "@chakra-ui/layout";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
+import { imageLoader } from "../pages/_app";
 import styles from "../styles/Navbar.module.css";
 import { shortAddress } from "../utils/utilFunctions";
 import { getContracts, getWeb3 } from "../web3/web3";
@@ -64,7 +65,7 @@ function Navbar() {
     <Box as="header" py={5} px={6} bg="gray.700">
       <Box as="nav" d="flex" alignItems="center" justifyContent="space-between">
         <HStack spacing="4">
-          <Image height="40px" width="40px" src="/aave.7a37d675.svg" alt="Web3 Saver" />
+          <Image loader={imageLoader} height="40px" width="40px" src="/aave.7a37d675.svg" alt="Web3 Saver" />
           <Heading size="md">Web3 Saver</Heading>
         </HStack>
         <HStack spacing={isUserConnected ? "4" : "2"}>
@@ -81,6 +82,7 @@ function Navbar() {
               </Text>
               <HStack spacing="3">
                 <Image
+                  loader={imageLoader}
                   height="40px"
                   width="40px"
                   className={styles.accountImg}

@@ -2,6 +2,7 @@ import { Box, HStack, Text, VStack } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import Image from "next/image";
 import { AppContext } from "./Layout";
+import { imageLoader } from "../pages/_app";
 
 function TokenData() {
   const { selectedToken } = useContext(AppContext);
@@ -9,7 +10,13 @@ function TokenData() {
     <>
       <Box d="flex" justifyContent="space-between" py={2} px={4}>
         <HStack spacing="3">
-          <Image height="60px" width="60px" src={selectedToken.imgUrl} alt={selectedToken.ticker} />
+          <Image
+            loader={imageLoader}
+            height="60px"
+            width="60px"
+            src={selectedToken.imgUrl}
+            alt={selectedToken.ticker}
+          />
           <Text fontWeight="bold" fontSize="lg">
             {selectedToken.ticker}
           </Text>

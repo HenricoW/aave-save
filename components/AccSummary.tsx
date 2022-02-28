@@ -10,6 +10,7 @@ import { ZERO_ADDR } from "../utils/dummyData";
 import { Button } from "@chakra-ui/react";
 import { Signer } from "ethers";
 import WelcomeBlub from "./WelcomeBlub";
+import { imageLoader } from "../pages/_app";
 
 function AccSummary() {
   const { userData, userAmounts, isUserConnected, contracts, web3 } = useContext(AppContext);
@@ -75,6 +76,7 @@ function AccSummary() {
           <Box d="flex" flexWrap="wrap" justifyContent="space-around">
             <Box className="accountValues" d="flex" alignItems="center">
               <Image
+                loader={imageLoader}
                 src={userData.blockie}
                 width="70px"
                 height="70px"
